@@ -1,0 +1,19 @@
+{
+  "name": "阳光工作台",
+  "short_name": "杨家工作台",
+  "description": "杨老师的手机端个人工作台：今日计划、喝水、健身、体重、一键点餐",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#eef2e6",
+  "theme_color": "#7d9471",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
