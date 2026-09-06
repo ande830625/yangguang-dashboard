@@ -1,0 +1,1557 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="dzpjAVAWhrB6dLWG7lDdLT" data-dm-ref="1"><head data-page-node-id="TTtN7pGlbXn560zwi5ZNgu">
+<meta charset="utf-8" data-page-node-id="Ys58qKDBfQ99gGrEuR4hsA">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" data-page-node-id="qiGfgZOk70JbI32MZ7eEqT"><title data-page-node-id="cKqObv9UDwsECRIvm5eWnD" data-pnid-children="imjiD9xPC8WpF4zAXCUwct" style="box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;animation-duration:.01ms !important;animation-delay:0s !important;transition-duration:.01ms !important;scroll-behavior:auto !important">阳光工作台</title>
+<title>阳光工作台</title>
+
+<!-- PWA：这四行决定了"添加到主屏幕"之后是不是全屏、图标好不好看 -->
+<link rel="manifest" href="manifest.json" data-page-node-id="HbyAklM7yFKitdMbfQa9J8">
+<link rel="apple-touch-icon" href="icon.png" data-page-node-id="W5BDdqPYpl8vAmuyHXMfLq">
+<meta name="apple-mobile-web-app-capable" content="yes" data-page-node-id="lOQAtMAzfkkam7FMNGRUhq">
+<meta name="apple-mobile-web-app-status-bar-style" content="default" data-page-node-id="0mvu4as5wvj5zBFH3PHMWf">
+<meta name="apple-mobile-web-app-title" content="杨家工作台" data-page-node-id="VyWOXG4n1Nu23l8RVOIhEt">
+<meta name="theme-color" content="#7d9471" data-page-node-id="9NDGBlwcEbxv7wu4IDDh5G"><meta data-page-node-id="KV6taxcmyW1FDm9SS9OHLc" http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate" style="box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;animation-duration:.01ms !important;animation-delay:0s !important;transition-duration:.01ms !important;scroll-behavior:auto !important"><meta data-page-node-id="7Of8NVa9YpfosFOjmXh2Vu" http-equiv="Pragma" content="no-cache" style="box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;animation-duration:.01ms !important;animation-delay:0s !important;transition-duration:.01ms !important;scroll-behavior:auto !important"><meta data-page-node-id="nocnUKiULaUoPEDVx4Op57" http-equiv="Expires" content="0" style="box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;animation-duration:.01ms !important;animation-delay:0s !important;transition-duration:.01ms !important;scroll-behavior:auto !important">
+
+
+
+
+
+
+<style>
+/* ==== 主题变量（第 4 步选定的风格包原样填这里，以后换肤只改这一段） ==== */
+:root{
+  --bg:#eef2e6;
+  --sidebar:#7d9471;
+  --sidebar-text:#f0f4ea;
+  --sidebar-active:#a8bc9c;
+  --card:#ffffff;
+  --text:#2f3a2c;
+  --text-dim:#7a8574;
+  --accent:#4a6741;
+  --radius:18px;
+  --shadow:0 2px 12px rgba(80,100,70,.08);
+  --font:-apple-system,"PingFang SC",system-ui,sans-serif;
+  --line:#e0e7d6;          /* 1px 细边框色。现代审美用细线，不用投影 */
+
+  /* 字号阶梯 —— 故意拉开跨度。所有字号都差不多，是业余感最大的来源 */
+  --fs-hero:40px;   /* 英雄元素：每页最大的那一个数字或标题，其余全部退后 */
+  --fs-title:22px;
+  --fs-body:16px;   /* 输入框不得低于 16px，否则 iOS 会自动放大整页 */
+  --fs-meta:13px;
+
+  --pad:18px;       /* 卡片内边距。留白是最便宜的高级感，宽屏下会变大 */
+  --gap:12px;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --ease:cubic-bezier(.4,0,.2,1);
+  --dur:.18s;
+}
+
+/* ==== 基础 ==== */
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  font-family:var(--font); background:var(--bg); color:var(--text);
+  font-size:var(--fs-body); line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+  overflow:hidden; /* 整页不滚，只让内容区滚 —— 避免 iOS 橡皮筋把侧边栏拽走 */
+}
+.app{display:flex;height:100%}
+
+/* ==== 侧边栏：常驻窄条 ==== */
+.side{
+  width:76px;flex-shrink:0;background:var(--sidebar);
+  display:flex;flex-direction:column;
+  padding:calc(12px + env(safe-area-inset-top,0)) 6px calc(12px + env(safe-area-inset-bottom,0));
+  overflow-y:auto;-webkit-overflow-scrolling:touch;
+}
+.side::-webkit-scrollbar{display:none}
+.brand{text-align:center;margin-bottom:14px;flex-shrink:0}
+.brand .logo{font-size:26px;line-height:1}
+.brand .name{font-size:11px;color:var(--sidebar-text);opacity:.85;margin-top:4px;line-height:1.3;word-break:break-all}
+.nav{display:flex;flex-direction:column;gap:4px}
+.nav button{
+  border:none;background:transparent;font-family:inherit;
+  padding:10px 2px;border-radius:12px;
+  color:var(--sidebar-text);font-size:11px;line-height:1.3;
+}
+.nav button .ico{display:block;font-size:21px;margin-bottom:3px}
+.nav button.on{background:var(--sidebar-active)}
+
+/* ==== 内容区 ==== */
+.main{
+  flex:1;min-width:0;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:calc(14px + env(safe-area-inset-top,0)) 12px calc(28px + env(safe-area-inset-bottom,0));
+  scroll-behavior:smooth;
+}
+.page{display:none;flex-direction:column;gap:var(--gap)}
+.page.on{display:flex}
+.page-title{font-size:var(--fs-title);font-weight:500;line-height:1.25;letter-spacing:-.01em;margin-bottom:2px}
+.page-sub{font-size:var(--fs-meta);color:var(--text-dim);margin-top:-6px;margin-bottom:2px}
+
+/* ==== 卡片 ==== */
+.card{
+  background:var(--card);border-radius:var(--radius);
+  border:1px solid var(--line);   /* 细线代替投影 */
+  box-shadow:var(--shadow);padding:var(--pad);
+}
+.card h2{font-size:17px;font-weight:500;margin-bottom:12px;display:flex;align-items:center;gap:7px}
+.hint{font-size:var(--fs-meta);color:var(--text-dim);margin-top:8px;line-height:1.6}
+.empty{font-size:var(--fs-meta);color:var(--text-dim);text-align:center;padding:22px 0}
+
+/* 英雄元素：每页最大的那一个。数字一律等宽，对齐后立刻专业 */
+.hero{font-size:var(--fs-hero);font-weight:500;line-height:1.1;letter-spacing:-.01em}
+.num,.hero{font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.unit{font-size:var(--fs-meta);color:var(--text-dim);font-weight:400;margin-left:5px}
+
+/* ==== 表单：字号必须 >=16px，否则 iOS 会自动放大整页 ==== */
+input,textarea,select{
+  transition:border-color var(--dur) var(--ease);
+  width:100%;font-size:var(--fs-body);font-family:inherit;color:var(--text);line-height:1.5;
+  padding:11px 13px;border:1px solid rgba(128,128,128,.28);
+  border-radius:calc(var(--radius) - 6px);background:transparent;
+}
+textarea{min-height:88px;resize:vertical;line-height:1.6}
+input::placeholder,textarea::placeholder{color:var(--text-dim)}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--accent)}
+.btn{
+  padding:11px 18px;font-size:15px;font-family:inherit;white-space:nowrap;
+  border:none;border-radius:calc(var(--radius) - 6px);
+  background:var(--accent);color:#fff;
+}
+.btn.ghost{background:transparent;color:var(--text);border:1px solid rgba(128,128,128,.3)}
+.btn.danger{background:#d9534f}
+.btn:active{opacity:.75}
+.row{display:flex;gap:8px;align-items:center}
+.row .btn{flex-shrink:0}
+
+/* ==== 列表 ==== */
+.item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px dashed rgba(128,128,128,.22)}
+.item:last-child{border-bottom:none}
+.item .grow{flex:1;min-width:0;line-height:1.6}
+.item .del{color:var(--text-dim);font-size:16px;background:none;border:none;padding:0 4px;flex-shrink:0}
+.box{
+  width:21px;height:21px;flex-shrink:0;margin-top:1px;
+  border:2px solid var(--accent);border-radius:6px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;color:#fff;background:transparent;
+}
+.item.done .box{background:var(--accent)}
+.item.done .grow{text-decoration:line-through;color:var(--text-dim)}
+
+/* ==== 提示条 ==== */
+/* 打卡大按钮 + 七日热力图（健身 / 喝水共用） */
+.punch{
+  display:block;width:100%;padding:15px;font-size:17px;font-family:inherit;font-weight:600;
+  border:2px solid var(--accent);border-radius:calc(var(--radius) - 4px);
+  background:transparent;color:var(--accent);
+}
+.punch.on{background:var(--accent);color:#fff}
+.heat{display:flex;gap:6px;margin-top:12px}
+.heat i{flex:1;height:28px;border-radius:7px;background:var(--line)}
+.heat i.hit{background:var(--accent)}
+
+/* ==== 进度条 + 统计行（骨架样式此前缺失，补回） ==== */
+.bar{height:8px;border-radius:4px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent);transition:width .3s var(--ease)}
+.stat{display:flex;justify-content:space-between;align-items:center;font-size:var(--fs-meta);color:var(--text-dim);margin-top:10px;gap:10px}
+
+/* ==== 组数打卡小块 + 星期选择 ==== */
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.chip{
+  padding:8px 4px;min-width:60px;flex:1;max-width:96px;text-align:center;
+  font-size:13px;font-family:inherit;border:1px solid var(--line);border-radius:9px;
+  background:transparent;color:var(--text-dim);
+}
+.chip.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.wk{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.wk .chip{flex:1;min-width:44px;max-width:none}
+
+/* ==== 健身：动作块（截图同款） ==== */
+.fitex{padding:14px 0;border-bottom:1px dashed var(--line)}
+.fitex:last-child{border-bottom:none;padding-bottom:4px}
+.fitex.rest{opacity:.55}
+.ex-head{display:flex;align-items:baseline;gap:8px}
+.ex-head b{font-size:16px}
+.ex-meta{margin-left:auto;font-size:13px;color:var(--text-dim);flex-shrink:0}
+.fitex .chips{margin-top:10px}
+.banner{
+  background:var(--accent);color:#fff;padding:11px 14px;
+  border-radius:var(--radius);font-size:13px;line-height:1.5;
+  display:flex;align-items:center;gap:10px;
+}
+.banner button{
+  margin-left:auto;flex-shrink:0;background:rgba(255,255,255,.22);color:#fff;
+  border:none;padding:6px 12px;border-radius:8px;font-size:13px;font-family:inherit;
+}
+.toast{
+  position:fixed;left:50%;bottom:calc(28px + env(safe-area-inset-bottom,0));
+  transform:translateX(-50%) translateY(8px);z-index:99;
+  background:rgba(0,0,0,.82);color:#fff;padding:10px 18px;border-radius:20px;
+  font-size:14px;opacity:0;pointer-events:none;
+  transition:opacity var(--dur) var(--ease),transform var(--dur) var(--ease);
+}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ════════ 动画 ════════
+   只做「让状态变化可理解」的动画，不做炫技的。
+   这是一天开十次的工具，任何多余动效第十次看就烦了。 */
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.page.on > *{animation:rise .26s var(--ease) both}
+/* 错开进场，形成自上而下的节奏，只错开前几个免得末尾等太久 */
+.page.on > *:nth-child(1){animation-delay:0s}
+.page.on > *:nth-child(2){animation-delay:.03s}
+.page.on > *:nth-child(3){animation-delay:.06s}
+.page.on > *:nth-child(4){animation-delay:.09s}
+.page.on > *:nth-child(n+5){animation-delay:.12s}
+
+.nav button,.btn,.card,.item .box{transition:all var(--dur) var(--ease)}
+.btn:active{opacity:.75;transform:scale(.98)}
+.item .box{transform:scale(1)}
+.item.done .box{animation:pop .22s var(--ease)}
+@keyframes pop{0%{transform:scale(1)}45%{transform:scale(1.18)}100%{transform:scale(1)}}
+
+/* 用户在系统里关了动效就一律不放 —— 这不是可选项 */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms !important;animation-delay:0s !important;
+    transition-duration:.01ms !important;scroll-behavior:auto !important}
+}
+
+/* ════════ 平板与横屏：侧栏展开成图标配文字 ════════ */
+@media (min-width:700px){
+  :root{--fs-hero:48px;--fs-title:26px;--pad:24px;--gap:16px}
+  .side{width:200px;padding-left:12px;padding-right:12px}
+  .brand{text-align:left;padding:0 8px;margin-bottom:22px}
+  .brand .logo{font-size:30px}
+  .brand .name{font-size:14px;margin-top:6px;word-break:normal}
+  .nav{gap:2px}
+  .nav button{
+    display:flex;align-items:center;gap:12px;text-align:left;
+    padding:12px 14px;font-size:15px;
+  }
+  .nav button .ico{display:inline;font-size:20px;margin:0;width:24px;text-align:center}
+  .main{padding:28px 32px 40px}
+}
+
+/* ════════ 桌面：卡片并排 ════════
+   标题、副标题、提示条永远占满整行；卡片默认半宽。
+   需要占满的重要卡片（英雄卡、长列表）加 class="card wide"。 */
+@media (min-width:1100px){
+  :root{--fs-hero:56px;--fs-title:30px;--pad:30px;--gap:20px}
+  .side{width:240px}
+  .main{padding:36px 44px 52px}
+  .page.on{
+    display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:var(--gap);align-content:start;
+  }
+  .page.on > .page-title,
+  .page.on > .page-sub,
+  .page.on > .banner,
+  .page.on > .card.wide{grid-column:1 / -1}
+}
+
+/* 超宽屏限制内容宽度并居中 —— 一行文字超过 40 个汉字就难读了 */
+@media (min-width:1700px){
+  .main > .page.on{max-width:1400px;margin:0 auto}
+}
+</style>
+<style id="__dm_no_drag_style__">* { -webkit-user-drag: none !important; }</style><style id="__dm_bindable_badge_style__">[data-sp-bindable="database"]{outline:1px dashed #0088ff;outline-offset:2px;border-radius:4px;}[data-sp-bindable="database"] *{pointer-events:none !important;transition:none !important;animation:none !important;}[data-sp-bindable="database"]{transition:none !important;animation:none !important;}</style></head>
+<body data-page-node-id="g1aiPl4eyY8z9fT0g3Bdl4" style="position: relative;">
+
+<div class="app" data-page-node-id="ERtjMeBya2nL60WydXqaLD">
+
+  <!-- ==== 侧边栏 START ==== -->
+  <aside class="side" data-page-node-id="lii711YHqrnwAWWXPHWUSK">
+    <div class="brand" data-page-node-id="Cf1PoqGjatD1gHIo1E6w84">
+      <div class="logo" data-page-node-id="fdj5bD1nCMbhcKrNCbdYA2">☀️</div>
+      <div class="name" data-page-node-id="BulWwxsfBm15SnGi82YRAj">阳光工作台</div>
+    </div>
+    <nav class="nav" id="nav" data-page-node-id="21Ix4IC55RYrWDUeVuxI6J"><button data-id="plan" onclick="App.go('plan')" class="">
+         <span class="ico">📅</span>今日计划
+       </button><button data-id="water" onclick="App.go('water')" class="">
+         <span class="ico">💧</span>喝水
+       </button><button data-id="fit" onclick="App.go('fit')" class="on">
+         <span class="ico">🏋️</span>健身
+       </button><button data-id="weight" onclick="App.go('weight')" class="">
+         <span class="ico">⚖️</span>体重
+       </button><button data-id="kitchen" onclick="App.go('kitchen')" class="">
+         <span class="ico">🍚</span>吃什么
+       </button><button data-id="recap" onclick="App.go('recap')">
+         <span class="ico">📊</span>复盘
+       </button><button data-id="settings" onclick="App.go('settings')">
+         <span class="ico">⚙️</span>设置
+       </button></nav>
+  </aside>
+  <!-- ==== 侧边栏 END ==== -->
+
+  <main class="main" id="main" data-page-node-id="KHtbXTnfCCzEyKFUqfBOgg">
+
+    <!-- ==== 功能：周复盘 START ==== -->
+    <section class="page" id="page-recap" data-page-node-id="wurgpagnTuRa34bHT6hbPJ">
+      <div class="page-title" data-page-node-id="chTZo21uP551GBFlHQk8Hh">这一周</div>
+      <div class="page-sub" data-page-node-id="WFuCCgTnCmneoDoNGsIU1v">周日晚上看一眼，比任何提醒都管用</div>
+      <div class="card wide" data-page-node-id="bqbQUe1mwfyvsV8CvZI6op">
+        <div id="recapBody" data-page-node-id="otV61Wo1Ty171lJK0HDQpJ"></div>
+        <div class="row" style="margin-top:18px" data-page-node-id="d6JP1Y9QUi6rmrMNBBrcT5">
+          <button class="btn" onclick="Recap.makeCard()" data-page-node-id="JXwlHbxYtjLsHgEiHz5LkX">生成图卡</button>
+        </div>
+        <p class="hint" data-page-node-id="TywA5Lm9iohoHz5DPMBSW9">生成一张能存下来的图，想发就发。图上不含你的具体记录内容。</p>
+      </div>
+    </section>
+    <!-- ==== 功能：周复盘 END ==== -->
+
+    <!-- ==== 功能：今日计划 START ==== -->
+    <section class="page" id="page-plan" data-page-node-id="e3aorrQLO1eW9QITVK9nPC">
+      <div class="page-title" id="planTitle" data-page-node-id="vREyRJVbPTlCBsnCuR9E8U">今日计划 · 周日</div>
+      <div class="page-sub" id="planSub" data-page-node-id="3mteLsa4PIq2r6RJvFAxHs">今天没有会议</div>
+      <div id="planBanner" data-page-node-id="vJXd8ZAkoWOz3fV448wc5u"></div>
+      <div class="card wide" data-page-node-id="cQq2MQM0pYTPeJKtBv6hQA">
+        <h2 data-page-node-id="CkAcXpcumJIajoohreAuJO">📅 今天的安排</h2>
+        <div id="planList" data-page-node-id="0limOiDdARwMCorj5GsKSP"><div class="empty">还没有固定行程，在下面添加</div></div>
+      </div>
+      <div class="card" data-page-node-id="1ooQOtxYaycCXwYPmlz6EO">
+        <h2 data-page-node-id="x5pdJiaOUlDGr1nZL4ahua">➕ 加一条临时待办</h2>
+        <div class="row" data-page-node-id="xrBmWuVArIGZxTYAmPxbrV">
+          <input type="text" id="planExtraInput" placeholder="如：给小女儿听写生词" data-page-node-id="UiE7KhLbEVDsUOL2MtWuce">
+          <button class="btn" onclick="Plan.addExtra()" data-page-node-id="rJtZkgtFP8V3eDWppsEPRP">添加</button>
+        </div>
+        <p class="hint" data-page-node-id="GzVQdAxTaCS97cJnEsk85G">临时的事只属于今天，明天打开自动清空。</p>
+      </div>
+      <div class="card" data-page-node-id="RUVbMdeuhvmFx2MOqSqfEX">
+        <h2 data-page-node-id="m9D22lWNGAaWWAAbGDJaAH">📌 会议备忘</h2>
+        <div class="row" data-page-node-id="l2S70LMx06mCBgHfMpoO8X">
+          <input type="date" id="mtgDate" placeholder="时间" style="max-width: 160px; box-sizing: border-box; margin: 0px; padding: 11px 13px; -webkit-tap-highlight-color: transparent; transition: border-color 0.18s cubic-bezier(0.4, 0, 0.2, 1); width: 100%; font-size: 16px; font-family: inherit; color: rgb(26, 32, 44); line-height: 1.5; border: 1px solid rgba(128, 128, 128, 0.28); border-radius: calc(8px); background: transparent;" inputmode="numeric" data-page-node-id="VuFNFNJgzpEFJmg0dEJ2lg">
+          <input type="time" id="mtgTime" placeholder="事项，如：行政例会" data-page-node-id="y5SJNNhB6rliiYhCMUxJPU" style="box-sizing: border-box; margin: 0px; padding: 11px 13px; -webkit-tap-highlight-color: transparent; transition: border-color 0.18s cubic-bezier(0.4, 0, 0.2, 1); width: 100%; font-size: 16px; font-family: inherit; color: rgb(26, 32, 44); line-height: 1.5; border: 1px solid rgba(128, 128, 128, 0.28); border-radius: calc(8px); background: transparent; max-width: 130px;">
+          
+        
+        </div>
+        <div class="row" style="margin: 8px 0px 0px; box-sizing: border-box; padding: 0px; -webkit-tap-highlight-color: transparent; display: flex; gap: 8px; align-items: center;" data-page-node-id="rbXlODBdfKMGFhpkuq8uQ1">
+          
+        <input data-page-node-id="q1aNewMtgText" type="text" id="mtgText" placeholder="会议内容，如：行政例会" style="box-sizing:border-box;margin:0;padding:11px 13px;-webkit-tap-highlight-color:transparent;animation-duration:.01ms !important;animation-delay:0s !important;transition-duration:.01ms !important;scroll-behavior:auto !important;transition:border-color .18s cubic-bezier(.4,0,.2,1);width:100%;font-size:16px;font-family:inherit;color:#2f3a2c;line-height:1.5;border:1px solid rgba(128,128,128,.28);border-radius:calc(14px - 6px);background:transparent"><button data-page-node-id="oT1tSqarc6GUWKodqTLjLj" class="btn" onclick="Plan.addMtg()" style="box-sizing:border-box;margin:0;padding:11px 18px;-webkit-tap-highlight-color:transparent;animation-duration:.01ms !important;animation-delay:0s !important;transition-duration:.01ms !important;scroll-behavior:auto !important;font-size:15px;font-family:inherit;white-space:nowrap;border:none;border-radius:calc(14px - 6px);background:#4a6741;color:#fff;transition:all .18s cubic-bezier(.4,0,.2,1);flex-shrink:0">保存</button>
+        
+          </div><input data-page-node-id="q1aNewMtgPlace" type="text" id="mtgPlace" placeholder="地点（选填），如：行政楼二楼会议室" style="box-sizing:border-box;margin:0;padding:11px 13px;-webkit-tap-highlight-color:transparent;animation-duration:.01ms !important;animation-delay:0s !important;transition-duration:.01ms !important;scroll-behavior:auto !important;transition:border-color .18s cubic-bezier(.4,0,.2,1);width:100%;font-size:16px;font-family:inherit;color:#2f3a2c;line-height:1.5;border:1px solid rgba(128,128,128,.28);border-radius:calc(14px - 6px);background:transparent;margin-top:8px"><div data-page-node-id="q1aQuickDate" class="wk" style="box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;animation-duration:.01ms !important;animation-delay:0s !important;transition-duration:.01ms !important;scroll-behavior:auto !important;display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">
+          
+          
+          
+          
+        <button data-page-node-id="7hDiRaLBo2hiIbitmIm5ej" class="chip" onclick="Plan.quickDate(0)" style="box-sizing:border-box;margin:0;padding:8px 4px;-webkit-tap-highlight-color:transparent;animation-duration:.01ms !important;animation-delay:0s !important;transition-duration:.01ms !important;scroll-behavior:auto !important;min-width:44px;flex:1;max-width:none;text-align:center;font-size:13px;font-family:inherit;border:1px solid #e0e7d6;border-radius:9px;background:transparent;color:#7a8574">今天</button><button data-page-node-id="LvFKqOdJZILCJcanX8VCjw" class="chip" onclick="Plan.quickDate(1)" style="box-sizing:border-box;margin:0;padding:8px 4px;-webkit-tap-highlight-color:transparent;animation-duration:.01ms !important;animation-delay:0s !important;transition-duration:.01ms !important;scroll-behavior:auto !important;min-width:44px;flex:1;max-width:none;text-align:center;font-size:13px;font-family:inherit;border:1px solid #e0e7d6;border-radius:9px;background:transparent;color:#7a8574">明天</button><button data-page-node-id="6EEFHpRYnRsaeIlYpiFVKh" class="chip" onclick="Plan.quickDate(2)" style="box-sizing:border-box;margin:0;padding:8px 4px;-webkit-tap-highlight-color:transparent;animation-duration:.01ms !important;animation-delay:0s !important;transition-duration:.01ms !important;scroll-behavior:auto !important;min-width:44px;flex:1;max-width:none;text-align:center;font-size:13px;font-family:inherit;border:1px solid #e0e7d6;border-radius:9px;background:transparent;color:#7a8574">后天</button><button data-page-node-id="NuiRuzl085PkAcMePItm2R" class="chip" onclick="Plan.quickDate(7)" style="box-sizing:border-box;margin:0;padding:8px 4px;-webkit-tap-highlight-color:transparent;animation-duration:.01ms !important;animation-delay:0s !important;transition-duration:.01ms !important;scroll-behavior:auto !important;min-width:44px;flex:1;max-width:none;text-align:center;font-size:13px;font-family:inherit;border:1px solid #e0e7d6;border-radius:9px;background:transparent;color:#7a8574">下周</button></div>
+        
+        
+        <div id="mtgList" style="margin-top:8px" data-page-node-id="CcAAwDNA9QemcQuRmA8wB0"></div><p data-page-node-id="q1aMtgHint" class="hint" style="box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;animation-duration:.01ms !important;animation-delay:0s !important;transition-duration:.01ms !important;scroll-behavior:auto !important;font-size:13px;color:#7a8574;margin-top:8px;line-height:1.6">会议到哪天就自动出现在哪天的计划最上面，不用手动挪。</p>
+      
+      
+        </div>
+    </section>
+    <!-- ==== 功能：今日计划 END ==== -->
+
+    <!-- ==== 功能：喝水 START ==== -->
+    <section class="page" id="page-water" data-page-node-id="zjVO9OiEaF1mIFLihIiF5B">
+      <div class="page-title" data-page-node-id="EU8RZORBFe75mKg2tFL9TO">喝水</div>
+      <div class="page-sub" data-page-node-id="bqT8KRfjgosjDggfeu4f0G">开会间隙顺手点一下</div>
+      <div class="card wide" data-page-node-id="thkHKDiGiXcHLqZ04EN9O1">
+        <h2 data-page-node-id="JKlCyGiPWO4lgAVo3TaY8g">💧 今天</h2>
+        <div class="row" style="gap:16px;margin-top:4px" data-page-node-id="4I8EXlXjOSAAJiH1r0Bo2o">
+          <button class="btn" style="width:74px;height:74px;border-radius:50%;font-size:30px" onclick="Water.drink()" data-page-node-id="8fi9AGCidF2l4UsFnoYIJz">🥛</button>
+          <div data-page-node-id="Ec3Cbs6TDE3mDEJwcxxRk8">
+            <div class="hero num" id="waterCount" data-page-node-id="H8tea8OEtAjiQyyLro0YIj">3<span class="unit">/ 8 杯</span></div>
+          </div>
+          <button class="btn ghost" style="margin-left:auto" onclick="Water.undo()" data-page-node-id="x3MLXnHDLbGyQOOWyeKBMS">退一杯</button>
+        </div>
+        <div class="bar" style="margin-top:14px" data-page-node-id="hVwm2VUmoWr3ErcgM7uRTf"><i id="waterBar" style="width: 37.5%;" data-page-node-id="HTiTGqLHjsEuNBkcvridVv"></i></div>
+        <p class="hint" id="waterHint" data-page-node-id="2FHZgVdCYqxqZBKIeoBfby">还差 5 杯</p>
+      </div>
+      <div class="card wide" data-page-node-id="826HMsvfuTeMs5LI7nSbvm">
+        <h2 data-page-node-id="K91TE4H0SGIPz2fH2gHX7k">最近 7 天</h2>
+        <div class="heat" id="waterHeat" style="height:30px" data-page-node-id="lGelcMm30EHPJVCEAAR8OA"><i class="" title="0 杯"></i><i class="" title="0 杯"></i><i class="" title="0 杯"></i><i class="" title="0 杯"></i><i class="" title="0 杯"></i><i class="" title="0 杯"></i><i class="hit" title="3 杯"></i></div>
+        <div class="stat" data-page-node-id="bcsagJgAmF8RagCq53zdTd"><span data-page-node-id="3NxP4dBTcBRNCXTlZxApR2">两周前 → 今天</span><span id="waterWeek" data-page-node-id="1S1rv8SMMqh2QDAY0inVgV">本周共 3 杯</span></div>
+      </div>
+    </section>
+    <!-- ==== 功能：喝水 END ==== -->
+
+    <!-- ==== 功能：健身打卡 START ==== -->
+    <section class="page" id="page-fit" data-page-node-id="PQFROMdh2c1lofvHVmDpNc">
+      <div class="page-title" id="fitTitle" data-page-node-id="Oj8CmLHgDWww8YTGEzAHXr">健身打卡</div>
+      <div class="card wide" data-page-node-id="q1FitTodayCard">
+        <div class="row" style="align-items:center;margin-bottom:4px" data-page-node-id="q1FitHead">
+          <h2 style="margin:0" data-page-node-id="xxecsrMbL2vDNJ1BgIuHTM">胸肌！腹肌呢？</h2>
+        </div>
+        <div id="fitTodayList" data-page-node-id="q1FitTodayList"></div>
+      </div>
+      <div class="card" data-page-node-id="q1FitPlanCard">
+        <h2 data-page-node-id="q1FitPlanTitle">✏️ 编辑计划</h2>
+        <div class="row" data-page-node-id="q1FitPlanRow">
+          <input type="text" id="fitPlanName" placeholder="动作名称，如：哑铃" data-page-node-id="q1FitPlanName">
+          <button class="btn" onclick="Fit.addPlan()" data-page-node-id="q1FitPlanAdd">加入</button>
+        </div>
+        <div class="row" style="margin-top:8px" data-page-node-id="q1FitPlanRow2">
+          <input type="number" id="fitPlanSets" inputmode="numeric" min="1" max="50" placeholder="几组" style="max-width:90px" data-page-node-id="q1FitPlanSets">
+          <input type="number" id="fitPlanReps" inputmode="numeric" min="1" max="1000" placeholder="每组几次" style="max-width:120px" data-page-node-id="q1FitPlanReps">
+          <select id="fitPlanFreq" style="max-width:140px" data-page-node-id="q1FitPlanFreq">
+            <option value="daily">每天重复</option>
+            <option value="w1">每周 1 次</option>
+            <option value="w2">每周 2 次</option>
+            <option value="w3">每周 3 次</option>
+            <option value="w4">每周 4 次</option>
+            <option value="w5">每周 5 次</option>
+          </select>
+        </div>
+        <p class="hint" data-page-node-id="q1FitPlanHint">所有动作每天都会显示；选“每周 N 次”的动作到休息日会变淡并标注“今天休息”。</p>
+        <div id="fitPlanList" style="margin-top:8px" data-page-node-id="q1FitPlanList"></div>
+      </div>
+    </section>
+    <!-- ==== 功能：健身打卡 END ==== -->
+
+    <!-- ==== 功能：体重 START ==== -->
+    <section class="page" id="page-weight" data-page-node-id="d48TjUCOeMi55sebcnCGme">
+      <div class="page-title" data-page-node-id="zX7N7siYW8ppjedjFOWNO8">体重</div>
+      <div class="page-sub" data-page-node-id="ItA7qSebEByItSFvqJUIG2">每天早上空腹称，趋势比单天数更重要</div>
+      <div class="card wide" data-page-node-id="xrzZ3ddLcxbeodUkgsQQsC">
+        <h2 data-page-node-id="39m0mHcSsqjDNa2irZJixF">⚖️ 记一笔</h2>
+        <div class="row" data-page-node-id="r8s5exz7bo5CrPM9oWCrU7">
+          <input type="number" id="weightInput" inputmode="decimal" step="0.1" placeholder="今早体重（斤），如 145" data-page-node-id="pC3xZ3sjh3IbpPOJRcwQQ7">
+          <button class="btn" onclick="Weight.save()" data-page-node-id="R460pMcDMQxeLPbLUnHV8f">保存</button>
+        </div>
+        <div id="weightStats" style="margin-top:14px" data-page-node-id="2xgCnpIhSEf917DabYuUJy"><div class="stat">
+        <span>最近一条：<b class="num">139 kg</b>（2026-09-06）</span><span>继续加油</span>
+      </div></div>
+      </div>
+      <div class="card wide" data-page-node-id="Xk0zhdcQU03RDLvWgnLb4I">
+        <h2 data-page-node-id="Tl5T6p7MVIBOzhD88YeE7u">趋势</h2>
+        <div id="weightChart" data-page-node-id="rXBXckLOcJ8oiiaTTHGnZu"><div class="empty">再记一天就能看到趋势线</div></div>
+        <div id="weightHistory" style="margin-top:10px" data-page-node-id="DFNtboxlsDRnC0wFSOxmSt"><div class="item"><span class="time">09-06</span>
+          <span class="grow num">139 kg</span>
+          <button class="del" onclick="Weight.del('mtpo5wvv1bn8p')">✕</button></div></div>
+      </div>
+    </section>
+    <!-- ==== 功能：体重 END ==== -->
+
+    <!-- ==== 功能：吃什么 START ==== -->
+    <section class="page" id="page-kitchen" data-page-node-id="p1aPW9CJFSs3D5ULmceMjW"><div class="banner"><span>记得备份一下，数据只在这台手机上</span>
+       <button onclick="App.go('settings')">去备份</button></div>
+      <div class="page-title" data-page-node-id="M0DleJoInDm9wNPuLR7YJ6">今天吃什么</div>
+      <div class="page-sub" data-page-node-id="O5ZLRgyyvp6SVHfBObXxSj">一键直达家里的点餐小程序</div>
+      <div class="card wide" style="text-align:center;padding:34px var(--pad)" data-page-node-id="OniK4l9ZcDCWvYG5RZmYMO">
+        <div style="font-size:52px;line-height:1" data-page-node-id="C0iSCgbXMssimZKUvQi9sA">🍚</div>
+        <p class="hint" style="margin:12px 0 20px" data-page-node-id="lkSI2Y9IgRGZlsKvfkz5v9">打开「杨家后厨」，看看今天家里做什么好吃的</p>
+        <a class="btn" style="display:inline-block;text-decoration:none;font-size:16px;padding:13px 26px" href="https://a40c2e47dedb166e5.gz3.agentos-app.net/" target="_blank" rel="noopener" data-page-node-id="GRmSxjmcGBDdsQdRtq4QUB">
+          打开杨家后厨 · 去点餐 🍳
+        </a>
+      </div>
+    </section>
+    <!-- ==== 功能：吃什么 END ==== -->
+
+    <!-- 设置页是必备的，不要删 -->
+    <!-- ==== 功能：设置 START ==== -->
+    <section class="page" id="page-settings" data-page-node-id="e5437XCnWGMIvqsbiS73Hd">
+      <div class="page-title" data-page-node-id="psvBi8i4ZA2TS0HVEonZ2T">设置</div>
+
+      <div class="card" data-page-node-id="k3n8IELoty5NOMAilH4UDq">
+        <h2 data-page-node-id="zaF1TjQJtWZl4JaIQadx2C">💾 数据备份</h2>
+        <p class="hint" style="margin-top:0;margin-bottom:12px" data-page-node-id="w50xoXBVLr3Xnn6HMEXXgt">
+          你的所有数据都存在这台手机的浏览器里，不在任何服务器上。<br data-page-node-id="ojRIqpn2W2AiJAwnT8Vu8k">
+          换手机、清理浏览器数据前，记得先导出备份。
+        </p>
+        <div class="row" data-page-node-id="xfpWXSooakeN8ami9ZpPc0">
+          <button class="btn" onclick="Store.exportFile()" data-page-node-id="tMNHFIpoOAVBTizNnejD0a">导出备份</button>
+          <button class="btn ghost" onclick="document.getElementById('importFile').click()" data-page-node-id="vglJhYL1ITt6g2F9Vy20p5">恢复备份</button>
+        </div>
+        <input type="file" id="importFile" accept=".json" style="display:none" onchange="Store.importFile(this)" data-page-node-id="cF5tpLX3mFeZUHq2Y1O93P">
+        <p class="hint" id="backupInfo" data-page-node-id="SOxUP8GipGVOLmy8wreWPN"></p>
+      </div>
+
+      <!-- ==== 双端同步卡片 START ====（用户选单设备时删掉这张卡） -->
+      <div class="card wide" id="syncCard" data-page-node-id="0HaBUpVN9CM3AEkRVVgXYF">
+        <h2 data-page-node-id="qXDY99PMEKcwwtRscJmKhD">🔄 双端同步 <span class="hint" id="syncState" style="margin:0 0 0 auto;font-size:var(--fs-meta)" data-page-node-id="SWCWyWJu50Keuf0zP8jfsN"></span></h2>
+        <div id="syncOff" data-page-node-id="8QUucw5iqvR6cV6I0wIcm8">
+          <p class="hint" style="margin-top:0" data-page-node-id="2Mtlj1j9bU1DmyVqXrjyVy">
+            开启后手机和电脑登同一个账号，记的东西自动对齐。<br data-page-node-id="1Ym13IUcMyWp9sF5Wnc7B9">
+            <b data-page-node-id="lGkcVmsUmWHlEKoa5QCvKG">数据会在你的设备和云端各存一份</b>，本地那份始终在，断网照样能记。<br data-page-node-id="lSUKV5M0xeOX0jvDbog0EE">
+            云端那份是明文的——只有知道你密码的人能读，但平台运维理论上能看到。<br data-page-node-id="9L7gaJ9sTfMDyawfQKo7LJ">
+            <b data-page-node-id="PUjmqXK50NOY7RNXCeb1nj">密码忘了就进不去了，没有找回功能。</b>
+          </p>
+          <div style="margin-top:14px" data-page-node-id="zGx0gjXKxnXqj0iD2DM1ER">
+            <input type="text" id="syncUser" placeholder="用户名（3-32 个字符，只用来定位你的数据）" autocomplete="username" data-page-node-id="XaduExCT3zBMtsHa12imTD">
+          </div>
+          <div style="margin-top:10px" data-page-node-id="heWGNlId6UJarXRiixWdhN">
+            <input type="password" id="syncPass" placeholder="密码（至少 8 位）" autocomplete="new-password" data-page-node-id="vYUHEus4HGCADF9x3kfAKV">
+          </div>
+          <div class="row" style="margin-top:14px" data-page-node-id="DEZ2TIvHx3hlJlXN2N9eMm">
+            <button class="btn" onclick="Settings.enableSync()" data-page-node-id="qA4mIG6dnAq5eM6rYjOMUS">开启同步</button>
+            <button class="btn ghost" onclick="Store.exportFile()" data-page-node-id="dYhTf03mh0AlxAvf741OB6">先导出备份</button>
+          </div>
+          <p class="hint" data-page-node-id="XO6uuGkpoLqwT3BVt8Bzga">建议先导出一份备份再开——万一以后忘了密码，本地这份还在。</p>
+        </div>
+        <div id="syncOn" style="display:none" data-page-node-id="PQx7J7LbjduNfA6iZF1Al1">
+          <p class="hint" style="margin-top:0" data-page-node-id="Zpfwd9kfHeLX4ExeTcA0w4">账号：<b id="syncWho" class="mono" data-page-node-id="cE8HdRbtrhePisl4OtPv1T"></b><br data-page-node-id="W792wsCBmZ6Cw9iqjJPXjy">上次同步：<span id="syncTime" data-page-node-id="352lxvbT1ZFvvffdkhhNWe"></span></p>
+          <div class="row" style="margin-top:14px" data-page-node-id="u5LNMGKFSc3hTHDBmRa4H9">
+            <button class="btn" onclick="Sync.pull(true)" data-page-node-id="YcRJ1nekfyDf3dJ2RplUdZ">立即同步</button>
+            <button class="btn ghost" onclick="Settings.changePass()" data-page-node-id="RMWUg9Yy0gTbDE2fvyib0I">改密码</button>
+            <button class="btn ghost" onclick="Sync.disable()" data-page-node-id="2wmfurAlby8qcaocFypmV0">关闭同步</button>
+          </div>
+          <p class="hint" data-page-node-id="8ux0UXGlwk2IhH6ASSDLxt">
+            刚在另一台设备改的东西，这边最多等一分钟才看得到（云端缓存机制），
+            等不及就点「立即同步」。
+          </p>
+        </div>
+      </div>
+      <!-- ==== 双端同步卡片 END ==== -->
+
+      <!-- 本次没有联网功能，接口配置卡已移除 -->
+
+      <div class="card" data-page-node-id="vjv2l4voI2h2z9FH91McxV">
+        <h2 data-page-node-id="HwtUQKpDvE48HaXqmR6pQW">⚠️ 危险操作</h2>
+        <button class="btn danger" onclick="Store.wipe()" data-page-node-id="5A0CauP0S5LTOByksCZrOm">清空所有数据</button>
+        <p class="hint" data-page-node-id="awi4oyxCCLP6UF8x6k3POA">清空前请确认已经导出过备份，这个操作无法撤销。</p>
+      </div>
+
+      <div class="card" data-page-node-id="eyI4xJDTJUFoxGM2ZiSDyr">
+        <p class="hint" style="margin:0;text-align:center" data-page-node-id="GVNVAHNBSu5Pc6T5oS3tbF">
+          阳光工作台<br data-page-node-id="7wRkmaGa81g89KxF9Ul151">
+          <span style="opacity:.6" data-page-node-id="umCUuCIJPAtO1eS2HE81kp">由 不一书个人工作台生成器 生成</span>
+        </p>
+      </div>
+    </section>
+    <!-- ==== 功能：设置 END ==== -->
+
+  </main>
+</div>
+
+<div class="toast" id="toast" data-page-node-id="wItw3kwUyYU9xzw64sC1n7">已记录 139 kg</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   Store · 存储抽象层
+   所有数据读写都必须走这里，不要直接用 localStorage。
+
+   ── 为什么数组型数据要用 list/upsert 而不是 get/set ──
+   Store.set('money', 整个数组) 是「整本账一起覆盖」。单设备没问题，
+   一旦两台设备各自离线改过，后上传的那份会把另一份的改动无声吞掉：
+
+     手机 10 条 → 加 1 条 = 11 条，上传
+     电脑 10 条 → 加另 1 条 = 11 条，后上传 → 手机加的那条消失
+
+   所以数组型一律用 upsert / softDelete，每条带修改时间，合并时逐条比对。
+   ═══════════════════════════════════════════════════════════ */
+const Store = (() => {
+  const NS  = 'bysdash:';
+  const SEC = 'bysdash$secret:';
+  const TOMB_TTL = 30 * 864e5;   // 墓碑保留 30 天，之后清掉（那时各端早同步过了）
+
+  const driver = {
+    get(k){ try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } },
+    set(k,v){
+      try { localStorage.setItem(k, JSON.stringify(v)); return true; }
+      catch(e){
+        // 配额超了几乎总是因为存了没压缩的图片
+        UI.toast('存储空间满了，请到设置里导出备份后清理旧数据');
+        console.error(e); return false;
+      }
+    },
+    remove(k){ localStorage.removeItem(k); },
+    keys(){ return Object.keys(localStorage); }
+  };
+
+  const now = () => Date.now();
+
+  /** 按 id 逐条合并两个列表：同 id 取修改时间更新的那条 */
+  function mergeList(a, b){
+    const m = new Map();
+    for (const it of [...(a || []), ...(b || [])]) {
+      if (!it || !it.id) continue;
+      const prev = m.get(it.id);
+      if (!prev || (it._u || 0) > (prev._u || 0)) m.set(it.id, it);
+    }
+    return [...m.values()];
+  }
+
+  const S = {
+    /* ── 单值：配置、开关、计数快照这类 ── */
+    get(key, fallback = null){
+      const v = driver.get(NS + key);
+      return v === null || v === undefined ? fallback : v;
+    },
+    set(key, val){
+      const ok = driver.set(NS + key, val);
+      if (ok) this._touch();
+      return ok;
+    },
+    remove(key){ driver.remove(NS + key); this._touch(); },
+
+    /* ── 数组型：一条一条存，可合并 ── */
+    /** 读列表：过滤掉墓碑，顺手清理过期墓碑 */
+    list(key, sort){
+      const raw = this.get(key, []);
+      if (!Array.isArray(raw)) return [];
+      const cut = now() - TOMB_TTL;
+      const alive = [], keep = [];
+      for (const it of raw) {
+        if (it && it._d) { if ((it._u || 0) > cut) keep.push(it); continue; }
+        if (it) { alive.push(it); keep.push(it); }
+      }
+      if (keep.length !== raw.length) driver.set(NS + key, keep);  // 静默清理，不算一次写
+      return sort ? alive.sort(sort) : alive;
+    },
+
+    /** 增或改一条。没有 id 就生成一个；自动打修改时间 */
+    upsert(key, item){
+      const raw = this.get(key, []);
+      const it = Object.assign({}, item);
+      if (!it.id) it.id = Util.uid();
+      it._u = now();
+      delete it._d;
+      const i = raw.findIndex(x => x && x.id === it.id);
+      if (i >= 0) raw[i] = Object.assign({}, raw[i], it); else raw.push(it);
+      this.set(key, raw);
+      return it;
+    },
+
+    /** 软删除：留一个墓碑，否则另一台设备同步回来会把它复活 */
+    softDelete(key, id){
+      const raw = this.get(key, []);
+      const i = raw.findIndex(x => x && x.id === id);
+      if (i >= 0) raw[i] = { id, _d: 1, _u: now() };
+      else raw.push({ id, _d: 1, _u: now() });
+      this.set(key, raw);
+    },
+
+    /** 计数器：存成事件列表而不是一个数字。
+        数字没法正确合并（取大值会丢、相加会重复），列表天然可以。 */
+    incr(key, n = 1){
+      const raw = this.get(key, []);
+      for (let i = 0; i < n; i++) raw.push({ id: Util.uid(), _u: now() });
+      this.set(key, raw);
+      return this.count(key);
+    },
+    decr(key){
+      const alive = this.list(key);
+      if (alive.length) this.softDelete(key, alive[alive.length - 1].id);
+      return this.count(key);
+    },
+    count(key){ return this.list(key).length; },
+
+    /* ── 按天：key 自带日期，两台设备改的是不同 key，天然不冲突 ── */
+    getDaily(key, fallback = null){ return this.get(key + ':' + Util.today(), fallback); },
+    setDaily(key, val){ return this.set(key + ':' + Util.today(), val); },
+    listDaily(key, sort){ return this.list(key + ':' + Util.today(), sort); },
+    upsertDaily(key, item){ return this.upsert(key + ':' + Util.today(), item); },
+    incrDaily(key, n = 1){ return this.incr(key + ':' + Util.today(), n); },
+    decrDaily(key){ return this.decr(key + ':' + Util.today()); },
+    countDaily(key){ return this.count(key + ':' + Util.today()); },
+
+    /* ── 敏感数据：独立命名空间，不进备份 ── */
+    getSecret(key){ return driver.get(SEC + key); },
+    setSecret(key, val){ return driver.set(SEC + key, val); },
+
+
+    /* ── 旧版数据迁移 ──
+       v1.0 生成的工作台里，体重 [{date,value}]、日记 [{date,text}]、读书 [{title,...}]
+       这类结构是没有 id 的。而合并是按 id 做的，没 id 的条目会被整个跳过——
+       也就是升级后一开同步，这些历史记录会全部消失。
+       所以启动时补一次 id。
+
+       id 必须由内容算出来（不能用随机数）：手机和电脑各自迁移同一条记录时，
+       算出的 id 要一样，否则合并后会变成两条重复。 */
+    _stableId(o){
+      const s = JSON.stringify(Object.keys(o).sort().map(k => [k, o[k]]));
+      let h = 0;
+      for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
+      return 'm' + (h >>> 0).toString(36);
+    },
+
+    migrate(){
+      if (this.get('_migrated')) return 0;
+      let n = 0;
+      driver.keys().filter(k => k.startsWith(NS)).forEach(k => {
+        const v = driver.get(k);
+        if (!Array.isArray(v) || !v.length) return;
+        let touched = false;
+        const fixed = v.map(it => {
+          if (!it || typeof it !== 'object') return it;
+          const o = Object.assign({}, it);
+          if (!o.id) { o.id = this._stableId(it); touched = true; }
+          if (!o._u) { o._u = 1; touched = true; }   // 标成很早，新改动永远胜出
+          return o;
+        });
+        if (touched) { driver.set(k, fixed); n++; }
+      });
+      this.set('_migrated', Date.now());
+      if (n) console.info(`[迁移] 已为 ${n} 组历史数据补齐标识，一条没少`);
+      return n;
+    },
+
+    /* ── 供云同步用 ── */
+    _touch(){
+      driver.set(NS + '_lastWrite', now());
+      if (typeof Sync !== 'undefined' && Sync.on && Sync.on()) Sync.schedule();
+    },
+    mergeList,
+    /** 把远端整包数据合并进本地。数组型逐条合并，单值取时间新的 */
+    mergeRemote(remote){
+      if (!remote || typeof remote !== 'object') return 0;
+      let changed = 0;
+      for (const [key, rv] of Object.entries(remote)) {
+        if (key.startsWith('_')) continue;
+        const lv = this.get(key, null);
+        if (Array.isArray(rv)) {
+          const merged = mergeList(Array.isArray(lv) ? lv : [], rv);
+          if (JSON.stringify(merged) !== JSON.stringify(lv)) { driver.set(NS + key, merged); changed++; }
+        } else if (lv === null || lv === undefined) {
+          driver.set(NS + key, rv); changed++;
+        }
+        // 单值且两边都有：保守起来保留本地，避免远端旧值覆盖刚改的设置
+      }
+      return changed;
+    },
+    /** 导出给云端或备份用的整包（不含 secret） */
+    dump(){
+      const data = {};
+      driver.keys().filter(k => k.startsWith(NS)).forEach(k => {
+        data[k.slice(NS.length)] = driver.get(k);
+      });
+      return data;
+    },
+
+    /* ── 备份 ── */
+    exportAll(){
+      return { app:'阳光工作台', version:2, exportedAt:new Date().toISOString(), data:this.dump() };
+    },
+
+    exportFile(){
+      const blob = new Blob([JSON.stringify(this.exportAll(), null, 2)], {type:'application/json'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = '杨家工作台备份-' + Util.today() + '.json';
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+      this.set('_lastBackup', now());
+      UI.toast('已导出，建议转发到微信文件传输助手存一份');
+      Settings.refreshBackupInfo();
+    },
+
+    importFile(input){
+      const f = input.files[0];
+      if (!f) return;
+      const r = new FileReader();
+      r.onload = e => {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          if (!parsed.data) throw new Error('格式不对');
+          if (!confirm('恢复备份会与当前数据合并，确定吗？')) return;
+          // 用合并而不是覆盖：万一用户导入的是旧备份，现有数据不会被抹掉
+          const n = this.mergeRemote(parsed.data);
+          Object.entries(parsed.data).forEach(([k,v]) => {
+            if (!Array.isArray(v) && this.get(k, null) === null) driver.set(NS + k, v);
+          });
+          UI.toast('已合并 ' + n + ' 项，正在重新加载');
+          setTimeout(() => location.reload(), 900);
+        } catch(err){ UI.toast('文件读不了，可能不是备份文件'); }
+      };
+      r.readAsText(f);
+      input.value = '';
+    },
+
+    wipe(){
+      if (!confirm('确定清空所有数据？这个操作无法撤销。')) return;
+      if (!confirm('再确认一次：真的要清空吗？')) return;
+      driver.keys().filter(k => k.startsWith(NS)).forEach(k => driver.remove(k));
+      location.reload();
+    }
+  };
+  return S;
+})();
+
+
+/* ═══════════════════════════════════════════════════════════
+   Util · 工具
+   ═══════════════════════════════════════════════════════════ */
+const Util = {
+  today(){
+    const d = new Date();
+    return d.getFullYear() + '-' +
+           String(d.getMonth()+1).padStart(2,'0') + '-' +
+           String(d.getDate()).padStart(2,'0');
+  },
+  uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); },
+  dateOf(d){
+    return d.getFullYear() + '-' +
+           String(d.getMonth()+1).padStart(2,'0') + '-' +
+           String(d.getDate()).padStart(2,'0');
+  },
+  esc(s){ return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); },
+
+  // 图片必须压缩后再存，否则几张手机原图就撑爆 localStorage
+  compressImage(file, maxW = 800, quality = .72){
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        const scale = Math.min(1, maxW / img.width);
+        const cv = document.createElement('canvas');
+        cv.width  = img.width  * scale;
+        cv.height = img.height * scale;
+        cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+        resolve(cv.toDataURL('image/jpeg', quality));
+        URL.revokeObjectURL(img.src);
+      };
+      img.onerror = reject;
+      img.src = URL.createObjectURL(file);
+    });
+  }
+};
+
+
+/* ═══════════════════════════════════════════════════════════
+   UI · 界面工具
+   ═══════════════════════════════════════════════════════════ */
+const UI = {
+  toast(msg){
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('on');
+    clearTimeout(this._t);
+    this._t = setTimeout(() => t.classList.remove('on'), 2200);
+  },
+  banner(html, pageId = null){
+    const box = document.createElement('div');
+    box.className = 'banner';
+    box.innerHTML = html;
+    const target = pageId ? document.getElementById(pageId) : document.querySelector('.page.on');
+    target?.prepend(box);
+    return box;
+  }
+};
+
+
+/* ═══════════════════════════════════════════════════════════
+   App · 路由与启动
+   每加一个功能，在 routes 里加一条，侧边栏自动就有了。
+   ═══════════════════════════════════════════════════════════ */
+const App = {
+  routes: [
+    { id:'plan',     icon:'📅', name:'今日计划', onShow: () => Plan.render()    },
+    { id:'water',    icon:'💧', name:'喝水',     onShow: () => Water.render()   },
+    { id:'fit',      icon:'🏋️', name:'健身',     onShow: () => Fit.render()     },
+    { id:'weight',   icon:'⚖️', name:'体重',     onShow: () => Weight.render()  },
+    { id:'kitchen',  icon:'🍚', name:'吃什么',   onShow: () => Kitchen.render() },
+    { id:'recap',    icon:'📊', name:'复盘',     onShow: () => Recap.render()   },
+    { id:'settings', icon:'⚙️', name:'设置',     onShow: () => Settings.render() }
+  ],
+
+  go(id){
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('on'));
+    document.getElementById('page-' + id)?.classList.add('on');
+    document.querySelectorAll('#nav button').forEach(b =>
+      b.classList.toggle('on', b.dataset.id === id));
+    document.getElementById('main').scrollTop = 0;
+    Store.set('_lastPage', id);
+    this.routes.find(r => r.id === id)?.onShow?.();
+  },
+
+  init(){
+    Store.migrate();          // 旧版数据补齐 id，无感升级
+    // 渲染侧边栏
+    document.getElementById('nav').innerHTML = this.routes.map(r =>
+      `<button data-id="${r.id}" onclick="App.go('${r.id}')">
+         <span class="ico">${r.icon}</span>${r.name}
+       </button>`).join('');
+
+    // 回到上次看的那一页
+    const last = Store.get('_lastPage');
+    this.go(this.routes.some(r => r.id === last) ? last : this.routes[0].id);
+
+    this.checkBackup();
+    if (typeof Sync !== 'undefined') Sync.init();
+  },
+
+  /** 重绘当前页。同步拉到新数据后调用 */
+  refresh(){
+    const cur = document.querySelector('.page.on');
+    if (!cur) return;
+    const id = cur.id.replace('page-', '');
+    this.routes.find(r => r.id === id)?.onShow?.();
+  },
+
+  // 用户永远不会主动点导出，所以要主动提醒
+  checkBackup(){
+    const last = Store.get('_lastBackup');
+    const write = Store.get('_lastWrite');
+    if (!write) return;                                  // 还没存过东西，不用提醒
+    const days = last ? (Date.now() - last) / 864e5 : 99;
+    if (days < 7) return;
+    const b = UI.banner(
+      `<span>${last ? '已经 ' + Math.floor(days) + ' 天没备份了' : '记得备份一下，数据只在这台手机上'}</span>
+       <button onclick="App.go('settings')">去备份</button>`);
+  }
+};
+
+
+/* ═══════════════════════════════════════════════════════════
+   Settings · 设置页
+   ═══════════════════════════════════════════════════════════ */
+const Settings = {
+  // 本次没有联网功能，保持空数组即可（接口配置卡已删）
+  keys: [],
+
+  render(){
+    this.refreshBackupInfo();
+    this.renderSync();
+    this.keys.forEach(k => {
+      const el = document.getElementById('key_' + k);
+      if (el) el.value = Store.getSecret(k) || '';
+    });
+    if (!this.keys.length) document.getElementById('apiCard')?.remove();
+  },
+
+  enableSync(){
+    Sync.enable(document.getElementById('syncUser').value,
+                document.getElementById('syncPass').value);
+  },
+
+  changePass(){
+    const np = prompt('输入新密码（至少 8 位）');
+    if (np) Sync.changePass(np);
+  },
+
+  renderSync(){
+    const card = document.getElementById('syncCard');
+    if (!card || typeof Sync === 'undefined') return;
+    const on = Sync.on();
+    document.getElementById('syncOff').style.display = on ? 'none' : 'block';
+    document.getElementById('syncOn').style.display  = on ? 'block' : 'none';
+    if (on) {
+      document.getElementById('syncWho').textContent = Sync.cfg().user;
+      const t = Store.get('_syncAt');
+      document.getElementById('syncTime').textContent =
+        t ? new Date(t).toLocaleString('zh-CN') : '还没同步过';
+    }
+  },
+
+  saveKeys(){
+    this.keys.forEach(k => {
+      const el = document.getElementById('key_' + k);
+      if (el) Store.setSecret(k, el.value.trim());
+    });
+    UI.toast('已保存');
+  },
+
+  refreshBackupInfo(){
+    const last = Store.get('_lastBackup');
+    const el = document.getElementById('backupInfo');
+    if (el) el.textContent = last
+      ? '上次备份：' + new Date(last).toLocaleDateString('zh-CN')
+      : '还没备份过';
+  }
+};
+
+
+/* ==== 双端同步 START ====
+   用户选「只在一台设备用」时，把这整段（以及设置页里的 syncCard）删掉。
+
+   三条设计红线，破了就会烧掉免费额度或者丢数据：
+   1. 本地优先 —— 写入永远先落 localStorage，界面立刻变。云端是异步的。
+      断网、KV 抽风、额度用完，工作台照常能用，只是不同步。
+   2. 绝不轮询 —— 只在「打开时 / 切回前台 / 手动刷新」拉取。
+      每 30 秒轮一次的话，一台设备一个月就是 8 万多次函数调用。
+   3. 推送防抖 —— 改动后等 4 秒再推，把连续操作合并成一次请求。
+      勾 10 个待办应该是 1 次调用，不是 10 次。 */
+const Sync = {
+  DEBOUNCE: 4000,
+  _timer: null,
+  _busy: false,
+
+  cfg(){ return Store.get('_sync', { on:false, user:'' }); },
+  on(){ return !!this.cfg().on; },
+  pass(){ return Store.getSecret('syncPass') || ''; },
+
+  async call(action, extra = {}){
+    const c = this.cfg();
+    const r = await fetch('/api/sync', {
+      method:'POST',
+      headers:{ 'content-type':'application/json' },
+      body: JSON.stringify(Object.assign({ action, user:c.user, pass:this.pass() }, extra))
+    });
+    const j = await r.json().catch(() => ({ error:'返回格式不对' }));
+    if (!r.ok) throw new Error(j.error || ('请求失败 ' + r.status));
+    return j;
+  },
+
+  /** 开启同步：首次会把这个用户名注册下来 */
+  async enable(user, pass){
+    user = (user || '').trim().toLowerCase();
+    if (user.length < 3) return UI.toast('用户名至少 3 个字符');
+    if ((pass || '').length < 8) return UI.toast('密码至少 8 位');
+    Store.set('_sync', { on:true, user });
+    Store.setSecret('syncPass', pass);
+    try {
+      const j = await this.call('push', { data: Store.dump() });   // push 兼注册
+      if (j.data) Store.mergeRemote(j.data);
+      Store.set('_syncAt', Date.now());
+      UI.toast(j.created ? '同步已开启' : '已连上，数据已合并');
+      setTimeout(() => location.reload(), 900);
+    } catch(e){
+      Store.set('_sync', { on:false, user:'' });
+      Store.setSecret('syncPass', '');
+      UI.toast(e.message);
+    }
+  },
+
+  disable(){
+    if (!confirm('关闭同步？本地数据一条不会少，只是不再和云端对齐。')) return;
+    Store.set('_sync', { on:false, user:'' });
+    Store.setSecret('syncPass', '');
+    UI.toast('已关闭同步');
+    Settings.render();
+  },
+
+  async changePass(np){
+    if ((np || '').length < 8) return UI.toast('新密码至少 8 位');
+    try {
+      await this.call('chpass', { newPass: np });
+      Store.setSecret('syncPass', np);
+      UI.toast('密码已改');
+    } catch(e){ UI.toast(e.message); }
+  },
+
+  /** 拉取并合并。失败一律静默降级——本地数据才是主的 */
+  async pull(loud){
+    if (!this.on() || this._busy) return;
+    this._busy = true;
+    this.status('同步中');
+    try {
+      const j = await this.call('pull');
+      const n = Store.mergeRemote(j.data || {});
+      Store.set('_syncAt', Date.now());
+      this.status('已同步');
+      if (n) { if (loud) UI.toast('拉到 ' + n + ' 处更新'); App.refresh(); }
+      else if (loud) UI.toast('已是最新');
+    } catch(e){
+      this.status('未同步');
+      if (loud) UI.toast(e.message.includes('NO_ACCOUNT') ? '云端还没有数据' : e.message);
+    } finally { this._busy = false; }
+  },
+
+  /** 改动后延迟推送，把连续操作合并成一次 */
+  schedule(){
+    if (!this.on()) return;
+    clearTimeout(this._timer);
+    this._timer = setTimeout(() => this.push(), this.DEBOUNCE);
+  },
+
+  async push(){
+    if (!this.on() || this._busy) return;
+    this._busy = true;
+    this.status('同步中');
+    try {
+      const j = await this.call('push', { data: Store.dump() });
+      if (j.data) Store.mergeRemote(j.data);
+      Store.set('_syncAt', Date.now());
+      this.status('已同步');
+    } catch(e){
+      this.status('未同步');
+      console.warn('同步失败，本地数据不受影响：', e.message);
+    } finally { this._busy = false; }
+  },
+
+  status(t){
+    const el = document.getElementById('syncState');
+    if (el) el.textContent = t;
+  },
+
+  init(){
+    if (!this.on()) return;
+    this.pull();                                   // 打开时拉一次
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) this.pull();           // 切回前台再拉一次。到此为止，不轮询
+    });
+    window.addEventListener('online', () => this.push());
+  }
+};
+/* ==== 双端同步 END ==== */
+
+
+/* ==== 功能：今日计划 START ====
+   会议备忘（可选未来日期，自动出现在当天的最上面） + 临时待办（按天存，自动清空）。 */
+const Plan = {
+  /** 旧版「固定行程」一次性迁移：会议进 meetings，普通事项并进今天的临时待办 */
+  _migrateTpl(){
+    if (Store.get('_tpl_migrated')) return;
+    Store.list('plan_template').forEach(x => {
+      if (x.isMeet)
+        Store.upsert('meetings', { id: x.id, date: Util.today(), time: x.time || '', text: x.text, place: '', done: false });
+      else
+        Store.upsertDaily('plan_extra', { id: x.id, text: x.text, done: false, time: x.time || '' });
+    });
+    Store.set('_tpl_migrated', Date.now());
+  },
+
+  render(){
+    this._migrateTpl();
+    const d = new Date();
+    const week = '日一二三四五六'[d.getDay()];
+    document.getElementById('planTitle').textContent = '今日计划 · 周' + week;
+    const today = Util.today();
+    const mtgs = Store.list('meetings', (a,b) =>
+      (a.date + ' ' + (a.time || '99:99')).localeCompare(b.date + ' ' + (b.time || '99:99')));
+    const todays = mtgs.filter(x => x.date === today);
+    const future = mtgs.filter(x => x.date > today);
+    const extra = Store.listDaily('plan_extra');
+    document.getElementById('planSub').textContent =
+      todays.length ? `今天有 ${todays.length} 场会议，排在最前面` : '今天没有会议';
+
+    const box = (on) => `<span class="box">${on ? '✓' : ''}</span>`;
+    const mHtml = todays.map(x => `
+      <div class="item ${x.done ? 'done' : ''}" onclick="Plan.toggleMtg('${x.id}')">
+        ${box(x.done)}
+        <span class="grow"><b style="color:var(--accent)">【会议】</b>${Util.esc(x.text)}
+          <span style="font-size:13px;color:var(--text-dim)">${x.time ? ' · ' + x.time : ''}${x.place ? ' · 📍' + Util.esc(x.place) : ''}</span>
+        </span>
+        <button class="del" onclick="event.stopPropagation();Plan.delMtg('${x.id}')">✕</button>
+      </div>`).join('');
+    const eHtml = extra.map(x =>
+      `<div class="item ${x.done ? 'done' : ''}" onclick="Plan.toggleExtra('${x.id}')">
+          ${box(x.done)}
+          <span class="grow">${Util.esc(x.text)}</span>
+          <button class="del" onclick="event.stopPropagation();Plan.delExtra('${x.id}')">✕</button>
+        </div>`).join('');
+    document.getElementById('planList').innerHTML =
+      mHtml +
+      (extra.length ? '<div style="font-size:13px;color:var(--text-dim);padding:10px 0 2px">── 临时待办 ──</div>' + eHtml : '') +
+      (!mHtml && !extra.length ? '<div class="empty">今天还没有安排，在下面记一条</div>' : '');
+
+    // 即将到来的会议（明天、后天……）
+    const fHtml = future.map(x =>
+      `<div class="item"><span class="time">${x.date.slice(5)}${x.time ? ' ' + x.time : ''}</span>
+        <span class="grow">${Util.esc(x.text)}${x.place ? ' · 📍' + Util.esc(x.place) : ''}</span>
+        <button class="del" onclick="Plan.delMtg('${x.id}')">✕</button></div>`).join('');
+    document.getElementById('mtgList').innerHTML =
+      (future.length ? '<div style="font-size:13px;color:var(--text-dim);padding:10px 0 2px">── 即将到来的会议 ──</div>' + fHtml
+                     : '<div class="empty">后面暂时没有安排会议</div>');
+
+    // 日期输入默认今天
+    const de = document.getElementById('mtgDate');
+    if (de && !de.value) de.value = today;
+  },
+
+  quickDate(n){
+    const d = new Date(); d.setDate(d.getDate() + n);
+    document.getElementById('mtgDate').value = Util.dateOf(d);
+    document.getElementById('mtgTime').focus();
+  },
+
+  toggleMtg(id){
+    const it = Store.list('meetings').find(x => x.id === id);
+    if (!it) return;
+    it.done = !it.done;
+    if (it.done) Store.incr('recap_done:' + Util.today());   // 周复盘统计用
+    Store.upsert('meetings', it);
+    this.render();
+  },
+
+  addMtg(){
+    const date = document.getElementById('mtgDate').value || Util.today();
+    const time = document.getElementById('mtgTime').value;
+    const text = document.getElementById('mtgText').value.trim();
+    const place = document.getElementById('mtgPlace').value.trim();
+    if (!text) return UI.toast('先写上会议内容');
+    Store.upsert('meetings', { id: Util.uid(), date, time, text, place, done: false });
+    document.getElementById('mtgText').value = '';
+    document.getElementById('mtgPlace').value = '';
+    document.getElementById('mtgTime').value = '';
+    UI.toast(date === Util.today() ? '已加入今天的计划' : '已记下 ' + date.slice(5) + ' 的会议');
+    this.render();
+  },
+
+  delMtg(id){
+    if (!confirm('删除这条会议？')) return;
+    Store.softDelete('meetings', id);
+    this.render();
+  },
+
+  addExtra(){
+    const el = document.getElementById('planExtraInput');
+    const text = el.value.trim();
+    if (!text) return;
+    Store.upsertDaily('plan_extra', { id: Util.uid(), text, done:false, time:'' });
+    el.value = '';
+    Store.incr('recap_done:' + Util.today());
+    this.render();
+  },
+  toggleExtra(id){
+    const list = Store.listDaily('plan_extra');
+    const it = list.find(x => x.id === id);
+    if (!it) return;
+    it.done = !it.done;
+    if (it.done) Store.incr('recap_done:' + Util.today());
+    Store.upsertDaily('plan_extra', it);
+    this.render();
+  },
+  delExtra(id){
+    Store.softDelete('plan_extra:' + Util.today(), id);
+    this.render();
+  }
+};
+/* ==== 功能：今日计划 END ==== */
+
+
+/* ==== 功能：喝水 START ==== */
+const Water = {
+  GOAL: 8,
+  today(){ return Store.countDaily('water'); },
+
+  render(){
+    const n = this.today();
+    document.getElementById('waterCount').innerHTML = n + '<span class="unit">/ ' + this.GOAL + ' 杯</span>';
+    document.getElementById('waterBar').style.width = Math.min(n / this.GOAL * 100, 100) + '%';
+    document.getElementById('waterHint').textContent =
+      n >= this.GOAL ? '🎉 今天喝够了，很好' : '还差 ' + (this.GOAL - n) + ' 杯';
+
+    // 最近 7 天热力图
+    const days = [], today = new Date();
+    for (let i = 6; i >= 0; i--){
+      const d = new Date(today); d.setDate(today.getDate() - i);
+      days.push(Util.dateOf(d));
+    }
+    const counts = days.map(d => Store.count('water:' + d));
+    document.getElementById('waterHeat').innerHTML = counts.map(c =>
+      `<i class="${c ? 'hit' : ''}" title="${c} 杯"></i>`).join('');
+    const total = counts.reduce((s,c) => s + c, 0);
+    document.getElementById('waterWeek').textContent = '本周共 ' + total + ' 杯';
+  },
+
+  drink(){ Store.incrDaily('water'); this.render(); },
+  undo(){
+    if (Store.countDaily('water') > 0){ Store.decrDaily('water'); UI.toast('已退一杯'); }
+    else UI.toast('今天还没喝，退不了哦');
+    this.render();
+  }
+};
+/* ==== 功能：喝水 END ==== */
+
+
+/* ==== 功能：健身打卡 START ====
+   精简版：只有「训练计划」（动作名称 × 几组 × 每组几次 × 每天/每周N次）
+   + 「全部计划」按组点击，点完变色。旧数据一次性迁移成直接存动作名。 */
+const Fit = {
+  /* 每周 N 次 → 均匀铺到星期几（0=周日） */
+  WEEK_MAP: { w1:[1], w2:[1,4], w3:[1,3,5], w4:[1,2,4,5], w5:[1,2,3,4,5] },
+  freqLabel(days){
+    if (!days || !days.length || days.length === 7) return '每天';
+    return '每周' + days.map(x => '日一二三四五六'[x]).join('、');
+  },
+
+  _migrate(){
+    if (Store.get('_fit_v2')) return;
+    const exs = {};
+    Store.list('fit_ex').forEach(x => { exs[x.id] = x.name; });
+    Store.list('fit_plan').forEach(p => {
+      if (p.name) return;                        // 已是新格式
+      Store.upsert('fit_plan', { id: p.id, name: exs[p.ex] || '自定义动作', sets: p.sets, reps: p.reps, days: p.days || [] });
+    });
+    Store.set('_fit_v2', Date.now());
+  },
+
+  _seed(){
+    if (Store.get('_fit_seeded')) return;
+    if (!Store.list('fit_plan').length){
+      [['俯卧撑',3,15],['深蹲',3,20],['平板支撑',3,60],['开合跳',3,30]].forEach(([name, sets, reps]) =>
+        Store.upsert('fit_plan', { id: Util.uid(), name, sets, reps, days: [0,1,2,3,4,5,6] }));
+    }
+    Store.set('_fit_seeded', Date.now());
+  },
+
+  /** 这项今天该不该练。days 空 = 每天都练 */
+  dueToday(p){
+    const dow = new Date().getDay();
+    return !p.days || !p.days.length || p.days.includes(dow);
+  },
+
+  /* 每个动作一个专属色，完成的组用它高亮（截图同款多色效果） */
+  COLORS: ['#4a6741', '#10b981', '#8b5cf6', '#f59e0b', '#ef4444', '#06b6d4', '#ec4899', '#84cc16'],
+  colorOf(i){ return this.COLORS[i % this.COLORS.length]; },
+
+  render(){
+    this._migrate();
+    this._seed();
+    const today = Util.today();
+    const d = new Date();
+    document.getElementById('fitTitle').textContent =
+      (d.getMonth() + 1) + '月' + d.getDate() + '日 周' + '日一二三四五六'[d.getDay()];
+
+    // ── 全部计划每天都显示；每周 N 次的休息日变淡 ──
+    const plans = Store.list('fit_plan');
+    const doneSet = {};
+    Store.list('fit_sets:' + today).forEach(x => { doneSet[x.id] = 1; });
+    let total = 0, done = 0;
+    const list = plans.map((p, idx) => {
+      const color = this.colorOf(idx);
+      const due = this.dueToday(p);
+      total += p.sets;
+      let dn = 0;
+      const chips = [];
+      for (let i = 0; i < p.sets; i++){
+        const on = !!doneSet[p.id + '#' + i];
+        if (on) dn++;
+        chips.push(`<button class="chip ${on ? 'on' : ''}" ${on ? `style="background:${color};border-color:${color}"` : ''}
+          onclick="Fit.toggleSet('${p.id}',${i})">第${i + 1}组${on ? ' ✓' : ''}</button>`);
+      }
+      done += dn;
+      const meta = `每组 ${p.reps} 次 · ${dn}/${p.sets} 组` + (due ? '' : ' · 今天休息');
+      return `<div class="fitex ${due ? '' : 'rest'}">
+          <div class="ex-head"><b>${Util.esc(p.name)}</b><span class="ex-meta">${meta}</span></div>
+          <div class="chips">${chips.join('')}</div>
+        </div>`;
+    }).join('');
+    document.getElementById('fitTodayList').innerHTML =
+      list || '<div class="empty">还没有动作，在下面「编辑计划」里加一个</div>';
+
+    // ── 编辑计划：清单（增删都在这里）──
+    document.getElementById('fitPlanList').innerHTML = Store.list('fit_plan').map(p =>
+      `<div class="item"><span class="grow">${Util.esc(p.name)} · ${p.sets} 组 × 每组 ${p.reps} 次
+          <span style="font-size:12px;color:var(--text-dim)">（${this.freqLabel(p.days)}）</span></span>
+        <button class="del" onclick="Fit.delPlan('${p.id}')">✕</button></div>`).join('')
+      || '<div class="empty">还没有计划项</div>';
+  },
+
+  /* ── 点一组 / 取消一组 ── */
+  toggleSet(pid, i){
+    const key = 'fit_sets:' + Util.today();
+    const id = pid + '#' + i;
+    const has = Store.list(key).some(x => x.id === id);
+    if (has) Store.softDelete(key, id);
+    else {
+      Store.upsert(key, { id, pid });
+      Store.incr('recap_done:' + Util.today());   // 周复盘统计
+    }
+    this.render();
+  },
+
+  /* ── 加入训练计划 ── */
+  addPlan(){
+    const name = document.getElementById('fitPlanName').value.trim();
+    const sets = parseInt(document.getElementById('fitPlanSets').value, 10);
+    const reps = parseInt(document.getElementById('fitPlanReps').value, 10);
+    const freq = document.getElementById('fitPlanFreq').value;
+    if (!name) return UI.toast('先写动作名称');
+    if (!sets || sets < 1 || sets > 50) return UI.toast('几组填 1-50 的整数');
+    if (!reps || reps < 1 || reps > 1000) return UI.toast('每组几次填 1-1000 的整数');
+    const days = freq === 'daily' ? [0,1,2,3,4,5,6] : (this.WEEK_MAP[freq] || [0,1,2,3,4,5,6]).slice();
+    Store.upsert('fit_plan', { id: Util.uid(), name, sets, reps, days });
+    document.getElementById('fitPlanName').value = '';
+    document.getElementById('fitPlanSets').value = '';
+    document.getElementById('fitPlanReps').value = '';
+    UI.toast('已加入训练计划');
+    this.render();
+  },
+  delPlan(id){
+    if (!confirm('从训练计划里删除这项？')) return;
+    Store.softDelete('fit_plan', id);
+    this.render();
+  }
+};
+/* ==== 功能：健身打卡 END ==== */
+
+
+/* ==== 功能：体重 START ====
+   单位一律用「斤」。历史数据（kg）首次加载时自动 ×2 迁移。
+   同一天重复保存会覆盖当天那条（不是新增），数据按天一条。 */
+const Weight = {
+  _migrateJin(){
+    if (Store.get('_w_jin')) return;
+    Store.list('weight_log').forEach(x => {
+      if (x.jin) return;   // 每条带标记，避免双端同步后重复 ×2
+      Store.upsert('weight_log', { id: x.id, date: x.date, value: +(x.value * 2).toFixed(1), jin: 1 });
+    });
+    Store.set('_w_jin', Date.now());
+  },
+
+  render(){
+    this._migrateJin();
+    const log = Store.list('weight_log', (a,b) => a.date.localeCompare(b.date));
+    const stats = document.getElementById('weightStats');
+    if (!log.length){
+      stats.innerHTML = '<p class="hint" style="margin:0">还没有记录，输入今天的体重吧</p>';
+      document.getElementById('weightChart').innerHTML = '<div class="empty">记满几天后这里会出现曲线</div>';
+      document.getElementById('weightHistory').innerHTML = '';
+      return;
+    }
+    const last = log[log.length - 1];
+    const prev = log.length > 1 ? log[log.length - 2] : null;
+    const diff = prev ? (last.value - prev.value) : 0;
+    const diffTxt = prev
+      ? `<span>较上次 <b style="color:${diff <= 0 ? 'var(--accent)' : '#d9534f'}">${diff > 0 ? '+' : ''}${diff.toFixed(1)}</b> 斤</span>`
+      : '<span>继续加油</span>';
+    stats.innerHTML = `<div class="stat">
+        <span>最近一条：<b class="num">${last.value} 斤</b>（${last.date}）</span>${diffTxt}
+      </div>`;
+    this.chart(log.slice(-14));
+    document.getElementById('weightHistory').innerHTML =
+      log.slice(-7).reverse().map(x =>
+        `<div class="item"><span class="time">${x.date.slice(5)}</span>
+          <span class="grow num">${x.value} 斤</span>
+          <button class="del" onclick="Weight.del('${x.id}')">✕</button></div>`).join('');
+  },
+
+  /** 手画 SVG 折线，不引图表库 */
+  chart(data){
+    const el = document.getElementById('weightChart');
+    if (data.length < 2){
+      el.innerHTML = '<div class="empty">再记一天就能看到趋势线</div>';
+      return;
+    }
+    const vals = data.map(d => d.value);
+    const min = Math.min(...vals), max = Math.max(...vals);
+    const span = (max - min) || 1;
+    const W = 320, H = 110, P = 10;
+    const pts = vals.map((v,i) =>
+      `${(P + i / (vals.length - 1) * (W - P*2)).toFixed(1)},${(H - P - (v - min) / span * (H - P*2)).toFixed(1)}`);
+    const svg = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block">
+      <polyline points="${pts.join(' ')}" fill="none" stroke="var(--accent)"
+        stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+      ${pts.map(p => `<circle cx="${p.split(',')[0]}" cy="${p.split(',')[1]}" r="3" fill="var(--accent)"/>`).join('')}
+    </svg>`;
+    el.innerHTML = svg + `<div class="stat"><span>${data[0].date.slice(5)}</span>
+      <span>${min.toFixed(1)} ~ ${max.toFixed(1)} 斤</span><span>${data[data.length-1].date.slice(5)}</span></div>`;
+  },
+
+  save(){
+    const el = document.getElementById('weightInput');
+    const v = parseFloat(el.value);
+    if (!v || v < 40 || v > 500) return UI.toast('输入一个合理的体重（斤）');
+    const date = Util.today();
+    const log = Store.list('weight_log', (a,b) => a.date.localeCompare(b.date));
+    const exist = log.find(x => x.date === date);
+    Store.upsert('weight_log', exist
+      ? { id: exist.id, date, value: v }
+      : { id: Util.uid(), date, value: v });
+    el.value = '';
+    UI.toast('已记录 ' + v + ' 斤');
+    this.render();
+  },
+
+  del(id){
+    if (!confirm('删除这条记录？')) return;
+    Store.softDelete('weight_log', id);
+    this.render();
+  }
+};
+/* ==== 功能：体重 END ==== */
+
+
+/* ==== 功能：吃什么 START ==== */
+const Kitchen = {
+  render(){ /* 纯链接页，无需渲染 */ }
+};
+/* ==== 功能：吃什么 END ==== */
+
+
+/* ==== 功能：周复盘 START ====
+   这是默认功能，别删。它的作用不只是「看数据」——
+   人不会分享自己的待办列表，但会分享「我连续记录了 100 天」。
+   一张能存下来的图卡，传播效率比界面好看高一个量级。 */
+const Recap = {
+  /** 把本周数据汇总成几个数字。功能不同就改这里，其余不用动 */
+  collect(){
+    const days = [], today = new Date();
+    const dow = (today.getDay() + 6) % 7;               // 周一为一周之始
+    for (let i = 0; i < 7; i++){
+      const d = new Date(today); d.setDate(today.getDate() - dow + i);
+      days.push(Util.dateOf(d));
+    }
+    const done = days.reduce((s,d) => s + Store.count('recap_done:' + d), 0);
+    const fitDays = days.filter(d => !!Store.get('fit:' + d)).length;
+    const cups = days.reduce((s,d) => s + Store.count('water:' + d), 0);
+    // 体重变化：本周第一条 vs 最后一条
+    const log = Store.list('weight_log', (a,b) => a.date.localeCompare(b.date))
+      .filter(x => x.date >= days[0] && x.date <= days[6]);
+    let wDiff = null;
+    if (log.length >= 2) wDiff = +(log[log.length-1].value - log[0].value).toFixed(1);
+    return { days, done, fitDays, cups, wDiff, from: days[0], to: days[6] };
+  },
+
+  render(){
+    const r = this.collect();
+    const el = document.getElementById('recapBody');
+    if (!el) return;
+    const wTxt = r.wDiff === null ? '' :
+      ` · 体重 ${r.wDiff > 0 ? '+' : ''}${r.wDiff} 斤`;
+    el.innerHTML = `
+      <div class="hero num">${r.fitDays}<span class="unit">/ 7 天健身</span></div>
+      <p class="hint">${r.from} 到 ${r.to} · 喝水 ${r.cups} 杯${wTxt} · 完成 ${r.done} 件事</p>`;
+  },
+
+  /** 画一张 1080×1350 的图卡，取当前主题色，右下角轻署名 */
+  async makeCard(){
+    const r = this.collect();
+    const cs = getComputedStyle(document.documentElement);
+    const v = n => cs.getPropertyValue(n).trim();
+    const W = 1080, H = 1350, cv = document.createElement('canvas');
+    cv.width = W; cv.height = H;
+    const g = cv.getContext('2d');
+    const font = (sz, w) => `${w||400} ${sz}px -apple-system,"PingFang SC",system-ui,sans-serif`;
+
+    g.fillStyle = v('--bg') || '#f5f2ec'; g.fillRect(0,0,W,H);
+    g.fillStyle = v('--card') || '#fff';
+    const pad = 72, cw = W - pad*2;
+    if (g.roundRect){ g.beginPath(); g.roundRect(pad, 180, cw, 900, 40); g.fill(); }
+    else g.fillRect(pad, 180, cw, 900);
+
+    g.fillStyle = v('--accent') || '#4a6741';
+    g.font = font(30, 500);
+    g.fillText('这一周 · 阳光工作台', pad + 56, 300);
+
+    g.fillStyle = v('--text') || '#222';
+    g.font = font(190, 500);
+    g.fillText(String(r.fitDays), pad + 56, 480);
+    g.font = font(38);
+    g.fillStyle = v('--text-dim') || '#888';
+    g.fillText('/ 7 天健身', pad + 56 + g.measureText(String(r.fitDays)).width + 40, 480);
+
+    g.font = font(34);
+    g.fillText(`${r.from}  —  ${r.to}`, pad + 56, 560);
+
+    // 七日方块（健身打卡）
+    const bw = 96, gap = 24, y = 660;
+    for (let i = 0; i < 7; i++){
+      const n = Store.get('fit:' + r.days[i]) ? 1 : 0;
+      g.fillStyle = n ? (v('--accent') || '#4a6741') : (v('--line') || '#e5e5e5');
+      g.globalAlpha = n ? 1 : 1;
+      const x = pad + 56 + i * (bw + gap);
+      if (g.roundRect){ g.beginPath(); g.roundRect(x, y, bw, bw, 26); g.fill(); }
+      else g.fillRect(x, y, bw, bw);
+      g.globalAlpha = 1;
+      g.fillStyle = v('--text-dim') || '#888';
+      g.font = font(28);
+      g.fillText('一二三四五六日'[i], x + bw/2 - 14, y + bw + 48);
+    }
+
+    g.fillStyle = v('--text') || '#222';
+    g.font = font(46, 500);
+    g.fillText(`喝水 ${r.cups} 杯${r.wDiff === null ? '' : ' · 体重 ' + (r.wDiff > 0 ? '+' : '') + r.wDiff + ' 斤'}`, pad + 56, 900);
+
+    g.fillStyle = v('--text-dim') || '#999';
+    g.font = font(26);
+    g.fillText('阳光工作台', pad + 56, 1010);
+    g.font = font(22);
+    g.fillText('由 不一书个人工作台生成器 生成', pad + 56, 1046);
+
+    // 导出。iOS 上 download 属性时常无效，所以失败就退回新窗口打开让用户长按保存
+    cv.toBlob(b => {
+      const url = URL.createObjectURL(b);
+      const a = document.createElement('a');
+      a.href = url; a.download = `这一周-${r.to}.png`;
+      a.click();
+      setTimeout(() => {
+        URL.revokeObjectURL(url);
+        UI.toast('图卡已保存到下载目录');
+      }, 800);
+    }, 'image/png');
+  }
+};
+/* ==== 功能：周复盘 END ==== */
+
+
+App.init();
+</script>
+
+
+
+</body></html>
